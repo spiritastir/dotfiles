@@ -1,0 +1,14 @@
+# Set personal aliases, overriding those provided by Oh My Zsh libs,
+# plugins, and themes. Aliases can be placed here, though Oh My Zsh
+# users are encouraged to define aliases within a top-level file in
+# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
+# - $ZSH_CUSTOM/aliases.zsh
+# - $ZSH_CUSTOM/macos.zsh
+# For a full list of active aliases, run `alias`.
+
+# ls
+alias la='ls -a'
+
+# Use GNU ls (brew install coreutils)
+# alias ls="gls -hFN --color=auto --group-directories-first"
+alias ls="gls -hN --color=auto"

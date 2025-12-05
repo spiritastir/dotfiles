@@ -1,0 +1,12 @@
+function update-environment () {
+  brew update
+  brew upgrade
+  brew autoremove
+  brew cleanup --prune=all
+  omz update
+  zimfw upgrade
+  zimfw update
+
+  # Restart environment
+  exec zsh
+}
