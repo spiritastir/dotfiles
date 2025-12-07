@@ -1,51 +1,72 @@
-# Initialize zim
+#
+# Zim initialization
+#
 if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZIM_CONFIG_FILE:-${ZDOTDIR:-${HOME}}/.zimrc} ]]; then
   source $(brew --prefix zimfw)/share/zimfw.zsh init
 fi
 source ${ZIM_HOME}/init.zsh
 
-# Comment out when not using the zsh-users/zsh-autosuggestions module in Zimfw
+# Required for zsh-users/zsh-autosuggestions in Zimfw
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
-# Initialize completion for current ZSH session
-# (commented out when using the zsh-autocomplete plugin or Zimfw completion module)
-# autoload -Uz compinit
-# compinit
+# Ensure add-zsh-hook is available
+autoload -Uz add-zsh-hook
 
-# Allow hidden files/directories to be shown/included in completions
+#
+# Completion
+#
+
+# Include hidden files in filename completion
 _comp_options+=(globdots)
 
-# Ignore duplicated commands in history
-setopt HIST_IGNORE_ALL_DUPS
-# Set general completion settings
-setopt MENU_COMPLETE     
-# Automatically highlight first element of completion menu
 setopt AUTO_LIST
-# Automatically list choices on ambiguous completion.
 setopt COMPLETE_IN_WORD
 
-# Enables menu selection, allowing to scroll through options with arrow keys
+# Use completion menu with arrow-key navigation
 zstyle ':completion:*' menu select
+
+#
+# History
+#
+
+# Storage location
+HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+
+# More metadata: timestamps, elapsed time
+setopt EXTENDED_HISTORY
+
+# Keep history clean: keep newer entries, expire older duplicates first
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_REDUCE_BLANKS
+
+# Ignore duplicate matches & prevent saving duplicates
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+
+# Safety: on history expansion, reload expanded line for verification 
+setopt HIST_VERIFY
+
+# Sharing: real-time shared history across terminals
+setopt SHARE_HISTORY
 
 # fzf-tab
 # zstyle ':fzf-tab:*' fzf-flags '--preview-window=hidden,<9999(hidden)'
 # zstyle ':fzf-tab:*' fzf-preview 'echo Preview is not available!'
 # zstyle ':fzf-tab:*' fzf-pad 4
 
-ZSH_THEME="eastwood"
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
-
-# Ensure add-zsh-hook is available
-autoload -Uz add-zsh-hook
-
-plugins=(git)
-
-source $ZSH/oh-my-zsh.sh
-
 # fzf
 # source "$HOME/.config/fzf/fzf-config"
 
-# Initialize nvm
+#
+# Starship initialization
+#
+
+eval "$(starship init zsh)"
+
+#
+# nvm initialization
+#
 # source $(brew --prefix nvm)/nvm.sh
 
 # Activate nvm
@@ -53,7 +74,9 @@ source $ZSH/oh-my-zsh.sh
 #     nvm use
 # fi
 
-# Initialize pnpm
+#
+# pnpm initialization
+#
 # export PNPM_HOME="$(brew --prefix pnpm)"
 # case ":$PATH:" in
 #   *":$PNPM_HOME:"*) ;;

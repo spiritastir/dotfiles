@@ -9,7 +9,7 @@
 # Sets sane Zsh built-in environment options.
 zmodule environment
 # Provides handy git aliases and functions.
-# zmodule git
+zmodule git
 # Applies correct bindkeys for input events.
 zmodule input
 # Sets a custom terminal title.
@@ -28,7 +28,9 @@ zmodule archive
 # Exposes git repository status information to prompts.
 zmodule git-info
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
-zmodule asciiship
+# zmodule asciiship
+# Starship prompt
+zmodule joke/zim-starship
 
 #
 # Completion
@@ -38,7 +40,7 @@ zmodule asciiship
 zmodule zsh-users/zsh-completions --fpath src
 # Enables and configures smart and extensive tab completion, must be sourced
 # after all modules that add completion definitions.
-# zmodule completion
+zmodule completion
 # Replace zsh's default completion selection menu with fzf (requires manual installation: https://github.com/Aloxaf/fzf-tab).
 # zmodule Aloxaf/fzf-tab
 
