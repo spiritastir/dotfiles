@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "Setup script inspired by https://gist.github.com/zenorocha/7159780"
+
 #
 # Install Homebrew
 #
