@@ -1,9 +1,11 @@
 function update-environment () {
+  # brew
   brew update
   brew upgrade
   brew autoremove
   brew cleanup --prune=all
-  omz update
+
+  # zimfw
   zimfw upgrade
   zimfw update
 

@@ -1,7 +1,7 @@
 #
 # GENERAL SETTINGS
 #
-format = "$sudo$directory$git_status$git_branch$git_state$character"
+format = "$sudo$directory$git_branch$git_status$git_state$character"
 
 [sudo]
 disabled = false

@@ -67,12 +67,12 @@ eval "$(starship init zsh)"
 #
 # nvm initialization
 #
-# source $(brew --prefix nvm)/nvm.sh
+source $(brew --prefix nvm)/nvm.sh
 
 # Activate nvm
-# if test -f ".nvmrc"; then
-#     nvm use
-# fi
+if test -f ".nvmrc"; then
+    nvm use
+fi
 
 #
 # pnpm initialization
