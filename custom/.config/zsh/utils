@@ -62,9 +62,10 @@ exec /usr/bin/security find-generic-password -a ${(qq)USER} -s 'macos-sudo' -w" 
     command brew autoremove
     command brew cleanup --prune=all
 
-    # zimfw.zsh ends with `zimfw "$@"`, so pass the action to source
-    # (bare source would call zimfw with empty args → "Unknown action").
-    # Fresh file from brew; -q = unattended.
+    # Framework itself was upgraded by `brew upgrade` above (`zimfw upgrade`
+    # is disabled for Homebrew installs). This refreshes modules/plugins from
+    # .zimrc. zimfw.zsh ends with `zimfw "$@"`, so pass the action to source
+    # (bare source → empty args → "Unknown action"). -q = unattended.
     zimfw_zsh="$(command brew --prefix zimfw)/share/zimfw.zsh"
     if [[ ! -r $zimfw_zsh ]]; then
       print -u2 "zimfw not found at ${zimfw_zsh}."
