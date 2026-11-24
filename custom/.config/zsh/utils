@@ -1,14 +1,89 @@
+# update-environment — unattended brew + zimfw refresh.
+#
+# Keychain sudo (one-time):
+#   security add-generic-password -a "$USER" -s "macos-sudo" -w
+# Allow `security` Always access when macOS prompts.
+#
+# brew upgrades zimfw (formula); `zimfw update` refreshes modules only
+# (`zimfw upgrade` is disabled for Homebrew installs).
+# Residual prompts: Keychain ACL/unlock, GUI-only casks.
+# Auto-updating casks: brew upgrade -y --greedy
+
 function update-environment () {
-  # brew
-  brew update
-  brew upgrade
-  brew autoremove
-  brew cleanup --prune=all
+  # Local sandbox: stop on errors; traps/options cleaned up on return.
+  # emulate -L: stock zsh semantics, scoped to this function.
+  emulate -L zsh
+  # err_return: abort on failure (skips exec zsh).
+  # local_options / local_traps: keep setopt + trap changes function-scoped.
+  setopt err_return local_options local_traps
 
-  # zimfw
-  zimfw upgrade
-  zimfw update
+  local askpass=
+  local zimfw_zsh
+  # emulate -L does not restore umask — `always` must.
+  local old_umask=$(umask)
+  local prior_sudo_askpass=${SUDO_ASKPASS-}
+  local prior_sudo_askpass_set=${+SUDO_ASKPASS}
 
-  # Restart environment
+  {
+    # Abort on Ctrl-C / SIGTERM (cleanup is in `always` below).
+    trap 'return 130' INT
+    trap 'return 143' TERM
+
+    if ! command -v brew >/dev/null 2>&1; then
+      print -u2 "brew not found in PATH."
+      return 127
+    fi
+
+    # Find without -w so the secret is not printed; askpass fetches it later.
+    if [[ -n $USER ]] && command security find-generic-password -a "$USER" -s "macos-sudo" >/dev/null 2>&1; then
+      umask 077
+      askpass="$(mktemp -t update-environment-askpass)" || return
+      umask "$old_umask"
+
+      # Bake $USER in: askpass env may omit it. Absolute path avoids PATH hijacks.
+      print -r -- "#!/bin/sh
+exec /usr/bin/security find-generic-password -a ${(qq)USER} -s 'macos-sudo' -w" >"$askpass"
+      chmod 700 "$askpass"
+      export SUDO_ASKPASS="$askpass"
+
+      # Homebrew resets the sudo timestamp; keep SUDO_ASKPASS for later -A calls.
+      if ! /usr/bin/sudo -A -v >/dev/null 2>&1; then
+        print -u2 "Could not authenticate via Keychain item 'macos-sudo'."
+        return 1
+      fi
+    else
+      print -u2 "Keychain item 'macos-sudo' not found; brew may prompt for sudo."
+      unset SUDO_ASKPASS
+    fi
+
+    # -y: skip brew's default upgrade confirmation. command: bypass aliases.
+    command brew update
+    command brew upgrade -y
+    command brew autoremove
+    command brew cleanup --prune=all
+
+    # zimfw.zsh ends with `zimfw "$@"`, so pass the action to source
+    # (bare source would call zimfw with empty args → "Unknown action").
+    # Fresh file from brew; -q = unattended.
+    zimfw_zsh="$(command brew --prefix zimfw)/share/zimfw.zsh"
+    if [[ ! -r $zimfw_zsh ]]; then
+      print -u2 "zimfw not found at ${zimfw_zsh}."
+      return 1
+    fi
+    source "$zimfw_zsh" update -q
+  } always {
+    # Runs on success, failure, and INT/TERM — then err_return / return abort.
+    umask "$old_umask"
+    [[ -n $askpass && -e $askpass ]] && rm -f -- "$askpass"
+    if (( prior_sudo_askpass_set )); then
+      export SUDO_ASKPASS="$prior_sudo_askpass"
+    else
+      unset SUDO_ASKPASS
+    fi
+    # Drop cached sudo creds (clears Starship "as root"; limits leftover elevation).
+    /usr/bin/sudo -k 2>/dev/null || true
+  }
+
+  # Success only: reload shell so new PATH / modules apply.
   exec zsh
 }
