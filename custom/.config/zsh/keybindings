@@ -1,2 +1,13 @@
-# Set editor default keymap to emacs
+# Emacs keymap (Ctrl-A/E, Ctrl-P/N, etc.)
 bindkey -e
+
+# history-substring-search is loaded by zim but unbound by default.
+# Wire ↑/↓ (and emacs Ctrl-P/N) so typing a prefix then pressing up searches
+# matching history instead of stepping through every line.
+# Bind terminfo when set, and always CSI — terminals disagree on sequences.
+[[ -n ${terminfo[kcuu1]} ]] && bindkey "${terminfo[kcuu1]}" history-substring-search-up
+[[ -n ${terminfo[kcud1]} ]] && bindkey "${terminfo[kcud1]}" history-substring-search-down
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down

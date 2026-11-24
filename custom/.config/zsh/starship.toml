@@ -9,14 +9,6 @@ symbol = "root "
 style = 'dimmed'
 
 #
-# TRANSIENT PROMPT
-#
-# [transient_prompt]
-# enabled = true
-# format = "❯"
-# prompt_style = "dimmed"
-
-#
 # PROMPT STYLE
 #
 [character]

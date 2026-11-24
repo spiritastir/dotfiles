@@ -25,11 +25,12 @@ zmodule archive
 
 # Exposes how long the last command took to run to prompts.
 # zmodule duration-info
-# Exposes git repository status information to prompts.
-zmodule git-info
+# git-info: only needed for Zim-native prompts (asciiship, etc.). Starship
+# gathers git status itself, so leave this off to avoid unused startup work.
+# zmodule git-info
 # A heavily reduced, ASCII-only version of the Spaceship and Starship prompts.
 # zmodule asciiship
-# Starship prompt
+# Starship prompt (caches `starship init zsh`; do not also eval it in .zshrc)
 zmodule joke/zim-starship
 
 #
